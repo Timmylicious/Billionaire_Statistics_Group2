@@ -1,0 +1,141 @@
+---
+title: "Group2"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+date: "2024-02-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Q1: Print the structure of your dataset
+```{r}
+Billionaires_Statistics<- readxl::read_excel("Billionaires_Statistics.xlsx")                        
+str(Billionaires_Statistics)
+```
+# Q2:  List the variables in your dataset
+```{r}
+names(Billionaires_Statistics)
+```
+#Q3: Print the top 15 rows of your dataset
+```{r}
+head(Billionaires_Statistics, 15)
+```
+# Q4:  Write a user defined function using any of the variables from the data set.
+```{r}
+BillionaireMean = mean(Billionaires_Statistics$rank)
+Square = function(BillionaireMean){BillionaireMean^2}
+```
+
+# Q5: Use data manipulation techniques and filter rows based on any logical criteria that exist in your dataset.
+```{r}
+library("dplyr")
+filtered_data <- Billionaires_Statistics %>% filter(finalWorth > 10000)
+```
+
+# Q6:  Identify the dependent & independent variables and use reshaping techniques and create a new data frame by joining those variables from your dataset.
+```{r}
+dependent_vars <- Billionaires_Statistics$countryOfCitizenship
+independent_vars <- Billionaires_Statistics[, c("birthMonth", "birthDay")]
+billionairescountry <- cbind(dependent_vars,independent_vars)
+View(billionairescountry)
+billionairescountry = as.data.frame(billionairescountry)
+```
+
+# Q7:  Remove missing values in your dataset
+```{r}
+Billionaires_Statistics <- na.omit(Billionaires_Statistics)
+head(Billionaires_Statistics)
+```
+#Q8:  Identify and remove duplicated data in your dataset
+```{r}
+duplicated(billionairescountry)
+billionairescountry[!duplicated(billionairescountry$dependent_vars), ]
+```
+#Q9:Reorder multiple rows in descending order
+
+```{r}
+d_order <- Billionaires_Statistics[order(-Billionaires_Statistics$age),]
+print(d_order)
+```
+```{r}
+nana <- Billionaires_Statistics[order(-Billionaires_Statistics$rank),]
+print(nana)
+```
+#Q10:  Rename some of the column names in your dataset
+```{r}
+colnames(Billionaires_Statistics) <- c("RankNew", "FinalWorthNew", "CategoryNew", "PersonNameNew", "AgeNew", "CountryNew", "City", "Source", "Industries", "CountryOfCitizenship", "Organization", "SelfMade", "Status", "Gender", "BirthDate", "LastName", "FirstName","Title", "Date", "State", "ResidenceStateRegion", "BirthYear", "BirthMonth", "BirthDay", "CPI_Country", "CPI_Change_Country", "GDP_Country", "GrossTertiaryEducationEnrollment","GrossPrimaryEducationEnrollmentCountry","LifeExpectancyCountry", "TaxRevenueCountryCountry", "TotalTaxRateCountry", "PopulationCountry", "LatitudeCountry", "LongitudeCountry")
+```
+
+#Q11:   Add new variables in your data frame by using a mathematical function (for e.g. – multiply an existing column by 2 and add it as a new variable to your data frame)
+```{r}
+Billionaires_Statistics$New_Variable <- Billionaires_Statistics$AgeNew * 2
+head(Billionaires_Statistics)
+
+```
+
+#Q12: Create a training set using random number generator engine.
+```{r}
+ set.seed(1234)
+billionairescountry %>% sample_frac(0.05, replace = FALSE)
+```
+#Q13: Print the summary statistics of your dataset
+```{r}
+summary(Billionaires_Statistics)
+```
+#Q14: Use any of the numerical variables from the dataset and perform the following statistical functions (Mean, Median, Mode, Range)
+```{r}
+mean(Billionaires_Statistics$FinalWorthNew)
+median(Billionaires_Statistics$FinalWorthNew)
+table_result=table(Billionaires_Statistics$RankNew)
+Mode<-names(table_result)[table_result==max(table_result)]
+print(Mode)
+```
+#Q15:  Plot a scatter plot for any 2 variables in your dataset
+```{r}
+library(ggplot2)
+ ggplot(Billionaires_Statistics, aes(x = RankNew, y = AgeNew)) + geom_point() +
+  labs(title = "Scatter Plot", x = "X-axis", y = "Y-axis")
+```
+
+#Q16:  Plot a bar plot for any 2 variables in your dataset
+```{r}
+ggplot(Billionaires_Statistics, aes(x = AgeNew, y = RankNew)) +
+  geom_bar(stat = "identity", fill = "orange") +
+  labs(title = "Bar Plot", x = "X-axis", y = "Y-axis")
+```
+#Q17: Find the correlation between any 2 variables by applying least square linear regression model
+```{r}
+variable1 <- "RankNew"
+variable2 <- "FinalWorthNew"
+
+linear_model <- lm(Billionaires_Statistics[[variable1]] ~ Billionaires_Statistics[[variable2]], data = Billionaires_Statistics)
+correlation <- cor(Billionaires_Statistics[[variable1]], fitted(linear_model))
+
+cat("Correlation between", variable1, "and", variable2, ":", correlation, "\n")
+
+```
+
